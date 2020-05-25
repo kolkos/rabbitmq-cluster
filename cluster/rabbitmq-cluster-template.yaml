@@ -71,6 +71,8 @@ objects:
   kind: ConfigMap
   metadata:
     name: ${CLUSTER_NAME}-config
+    labels:
+      app: ${CLUSTER_NAME}
   data:
     rabbitmq.conf: |
         loopback_users.guest = false
@@ -109,6 +111,25 @@ objects:
     selector:
       app: ${CLUSTER_NAME}
 
+# Load balancer to make cluster available from the outside
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${CLUSTER_NAME}-outside
+    labels:
+      app: ${CLUSTER_NAME}
+  spec:
+    type: NodePort
+    ports:
+     - name: http
+       port: 15672
+       nodePort: 31672
+     - name: amqp
+       port: 5672
+       nodePort: 30672
+    selector:
+      app: ${CLUSTER_NAME}
+
 # Headless service that makes it possible to lookup individual rabbitmq nodes
 - apiVersion: v1
   kind: Service
@@ -132,6 +153,8 @@ objects:
   kind: NetworkPolicy
   metadata:
     name: ${CLUSTER_NAME}-internal-access
+    labels:
+      app: ${CLUSTER_NAME}
   spec:
     podSelector:
       matchLabels:
