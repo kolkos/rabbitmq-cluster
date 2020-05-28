@@ -71,8 +71,6 @@ objects:
   kind: ConfigMap
   metadata:
     name: ${CLUSTER_NAME}-config
-    labels:
-      app: ${CLUSTER_NAME}
   data:
     rabbitmq.conf: |
         loopback_users.guest = false
@@ -153,8 +151,6 @@ objects:
   kind: NetworkPolicy
   metadata:
     name: ${CLUSTER_NAME}-internal-access
-    labels:
-      app: ${CLUSTER_NAME}
   spec:
     podSelector:
       matchLabels:
