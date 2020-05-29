@@ -35,9 +35,12 @@ parameters:
 - name: VOLUME_SIZE
   description: "Size of the RabbitMQ data volume"
   value: 1Gi
+- name: CLUSTER_SIZE
+  description: Number of pods in the cluster
+  from: "[0-9]{1,}"
+  value: "3"
 
 objects:
-
 # This service account is needed for rabbit_peer_discovery_k8s plugin to be able to discover
 # cluster nodes
 - apiVersion: v1
@@ -169,7 +172,7 @@ objects:
       app: ${CLUSTER_NAME}
   spec:
     serviceName: ${CLUSTER_NAME}
-    replicas: 2
+    replicas: ${CLUSTER_SIZE}
     selector:
       matchLabels:
         app: ${CLUSTER_NAME}
@@ -268,3 +271,17 @@ objects:
         resources:
           requests:
             storage: ${VOLUME_SIZE}
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    labels:
+      app: rabbitmq-cluster
+    name: management-console
+  spec:
+    port:
+      targetPort: http
+    to:
+      kind: Service
+      name: rabbitmq-cluster-balancer
+      weight: 100
+    wildcardPolicy: None
