@@ -1,0 +1,23 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-data
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 1Gi
+  local:
+    path: /data/postgres
+  persistentVolumeReclaimPolicy: Recycle
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - rabbitmq-cluster

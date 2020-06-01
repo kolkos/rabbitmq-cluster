@@ -1,0 +1,7 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    openshift.io/description: A RabbitMQ Cluster in OpenShift
+    openshift.io/display-name: RabbitMQ Cluster
+  name: rabbitmq
